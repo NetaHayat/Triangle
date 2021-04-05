@@ -54,13 +54,7 @@ public class Triangle {
      */
     public Triangle(double x1, double y1, double x2, double y2, double x3, double y3)
     {
-        this();
-        
-        if(isValid(new Point (x1,y1),new Point(x2,y2),new Point(x3,y3))) { // check if the 6 numbers created a valid triangle
-            this._point1 = new Point(x1,y1);
-            this._point2 = new Point(x2,y2);
-            this._point3 = new Point(x3,y3);
-        } // end of if statment 
+        this(new Point(x1, y1), new Point(x2, y2), new Point(x3, y3));
     } // end of constructor Triangle based on 6 numbers
     
     /**
@@ -165,24 +159,19 @@ public class Triangle {
         return "{"+ _point1 + "," + _point2 + "," + _point3 + "}";
     } // end of method toString()
     
-    private double getEdge(Point p1, Point p2)
-    { // calculates the distance between two points
-        return p1.distance(p2);
-    } // end of method getEdge()
-    
     private double getEdge1()
     { // calculates the first edge of the traingle based on the given points
-        return getEdge(this._point1, this._point2);
+        return this._point1.distance(this._point2);
     } // end of method getEdge1()
     
     private double getEdge2()
     { // calculates the second edge of the traingle based on the given points
-        return getEdge(this._point2, this._point3);
+        return this._point2.distance(this._point3);
     } // end of method getEdge2()
     
     private double getEdge3()
     { // calculates the third edge of the traingle based on the given points
-        return getEdge(this._point3, this._point1);
+        return this._point3.distance(this._point1);
     } // end of method getEdge3()
     
     private boolean epsilonTest(double num1, double num2)
@@ -249,9 +238,9 @@ public class Triangle {
         Point _center = new Point(x,y); // creating new point based on given x and y
         
         // declarations of distances between triangle points and the center of the circle 
-        double distance1 = getEdge(_point1, _center);
-        double distance2 = getEdge(_point2, _center); 
-        double distance3 = getEdge(_point3, _center);
+        double distance1 = this._point1.distance(_center);
+        double distance2 = this._point2.distance(_center); 
+        double distance3 = this._point3.distance(_center);
         
         return (epsilonTest(distance1, r) || distance1 < r) && (epsilonTest(distance2, r) || distance2 < r) && 
                 (epsilonTest(distance3, r) || distance3 < r);
@@ -360,21 +349,26 @@ public class Triangle {
      */
     public boolean isCongruent(Triangle other)
     {
-        if(epsilonTest(this.getEdge1(), other.getEdge1()) ||
-            epsilonTest(this.getEdge1(), other.getEdge2()) ||
-            epsilonTest(this.getEdge1(), other.getEdge3())) {
-            if(epsilonTest(this.getEdge2(), other.getEdge1()) ||
-                epsilonTest(this.getEdge2(), other.getEdge2()) ||
-                epsilonTest(this.getEdge2(), other.getEdge3())) {
-                if(epsilonTest(this.getEdge3(), other.getEdge1()) ||
-                   epsilonTest(this.getEdge3(), other.getEdge2()) ||
-                   epsilonTest(this.getEdge3(), other.getEdge3())) {
-                    return true;
-                } // end of if statment for getEdge3()
-            } // end of if statment for getEdge2()
-        } // end of if statment for getEdge1()
-        return false;
-    } // end of method isCongruent(Triangle other)
-    
+        double remainEdge1;
+        double remainEdge2;
+        
+        if(epsilonTest(this.getEdge1(), other.getEdge1())) {
+            remainEdge1 = other.getEdge2();
+            remainEdge2 = other.getEdge3();
+        }
+        else if(epsilonTest(this.getEdge1(), other.getEdge2())) {
+            remainEdge1 = other.getEdge1();
+            remainEdge2 = other.getEdge3();            
+        }
+        else if(epsilonTest(this.getEdge1(), other.getEdge3())) {
+            remainEdge1 = other.getEdge1();
+            remainEdge2 = other.getEdge2();            
+        }
+        else {
+            return false;
+        }
+        return epsilonTest(this.getEdge2(), remainEdge1) && epsilonTest(this.getEdge3(), remainEdge2) ||
+               epsilonTest(this.getEdge2(), remainEdge2) && epsilonTest(this.getEdge3(), remainEdge1);
+    }
 } // end of class Triangle 
 
